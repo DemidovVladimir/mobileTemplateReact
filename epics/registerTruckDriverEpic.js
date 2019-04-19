@@ -15,6 +15,7 @@ import {from, of} from "rxjs";
 import NavigatorService from "../services/NavigatorService";
 import { Storage } from 'aws-amplify'
 
+
 export const registerTruckDriverEpic = action$ =>
     action$.pipe(
         filter(action => action.type === SIGN_UP),
