@@ -4,7 +4,7 @@ import {
     CONFIRM_SIGN_UP_SUCCESS, SIGN_UP,
     SIGN_UP_FAIL,
     SIGN_UP_SUCCESS
-} from '../actions/registerTruckDriverActions';
+} from '../actions/exampleActions';
 
 const INITIAL_STATE = {
     username: null,
@@ -16,7 +16,7 @@ const INITIAL_STATE = {
     response: null,
 }
 
-export default registerTruckDriverReducer = (state = INITIAL_STATE, action) => {
+export default usersReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case SIGN_UP:
             return {
