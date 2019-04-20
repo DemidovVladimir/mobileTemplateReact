@@ -1,16 +1,8 @@
 import {combineEpics} from 'redux-observable';
 import {
-    confirmTruckDriverSignUpEpic,
-    registerTruckDriverEpic,
-    provideDocumentsEpic,
-    sendDocumentEpic,
-    sendDocumentSuccessEpic
-} from './epics/registerTruckDriverEpic';
+    exampleEpic
+} from './epics/exampleEpic';
 
 export default combineEpics(
-    registerTruckDriverEpic,
-    confirmTruckDriverSignUpEpic,
-    provideDocumentsEpic,
-    sendDocumentEpic,
-    sendDocumentSuccessEpic
+    exampleEpic
 );

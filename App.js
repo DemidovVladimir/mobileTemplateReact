@@ -1,19 +1,15 @@
 import React from 'react';
 import {Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
-import AppNavigator from './navigation/AppNavigator';
 import {Provider} from 'react-redux';
 import {applyMiddleware, combineReducers, compose, createStore} from 'redux';
 import logger from 'redux-logger';
 import {createEpicMiddleware} from 'redux-observable';
 import rootEpics from './root';
 import thunk from 'redux-thunk';
-import Amplify from 'aws-amplify';
-import config from './aws-exports';
+import registerTruckDriverReducer from './reducers/exampleReducer';
+import AppNavigator from './navigation/AppNavigator';
 import NavigatorService from './services/NavigatorService';
-import registerTruckDriverReducer from './reducers/registerTruckDriverReducer';
-
-Amplify.configure(config);
 
 // Store configuration
 const epicMiddleware = createEpicMiddleware();
@@ -21,7 +17,7 @@ const epicMiddleware = createEpicMiddleware();
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const featureReducers = combineReducers({
-    truckDriver: registerTruckDriverReducer,
+    users: registerTruckDriverReducer,
 });
 
 const store = createStore(

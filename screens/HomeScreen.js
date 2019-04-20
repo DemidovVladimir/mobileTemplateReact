@@ -1,83 +1,27 @@
 import React from 'react';
-import {Button, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import qrcode from 'yaqrcode';
+import {Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {sendDocument} from "../actions/registerTruckDriverActions";
-import {Buffer} from 'buffer';
+import {sendDocument} from "../actions/exampleActions";
 
 class HomeScreen extends React.Component {
-    static navigationOptions = {
-        header: null,
-    };
-
     constructor(props) {
         super(props);
-        if (this.props.truckDriver.username) {
-            this.base64 = qrcode(JSON.stringify({
-                username: this.props.truckDriver.username,
-                password: this.props.truckDriver.password
-            }));
-        }
     }
 
-    _readQRCode = async (blob) => {
-        var base64result = blob.split(',')[1];
-        return Promise.resolve(new Buffer.from(base64result, 'base64'));
-    };
-
-    _sendQRCode = async () => {
-        this._readQRCode(this.base64).then(buffer => {
-            this.props.sendDocument(buffer, 'qr-code');
-        }).catch(e => {
-            console.log(e);
-        });
-    };
-
     render() {
-        let generatedQRcode;
-        if (this.props.truckDriver.username) {
-            generatedQRcode =
-                <View>
-                    <Image
-                        style={{width: 200, height: 200}}
-                        source={{uri: this.base64}}
-                    />
-                    <Button
-                        title="Send QR Code to DB"
-                        onPress={() => this._sendQRCode()}
-                    />
-                </View>
-        } else {
-            generatedQRcode = <Text
-                style={styles.helpLinkText}>https://www.dummies.com/business/marketing/social-media-marketing/how-to-scan-a-qr-code/</Text>;
-        }
-
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                     <View style={styles.helpContainer}>
                         <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-                            <Text style={styles.helpLinkText}>Operator app</Text>
-                            {generatedQRcode}
-                            <Text>Last truck driver
-                                registered: {this.props.truckDriver.username || 'Not yet any'}</Text>
+                            <Text style={styles.helpLinkText}>Mobile App IOS</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
             </View>
         );
     }
-
-    _handleLearnMorePress = () => {
-        // WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-    };
-
-    _handleHelpPress = () => {
-        // WebBrowser.openBrowserAsync(
-        // 'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-        // );
-    };
 }
 
 const mapStateToProps = state => {
