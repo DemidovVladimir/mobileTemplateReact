@@ -1,8 +1,8 @@
 import React from 'react';
-import {Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, ScrollView, StyleSheet, Text, View, Button} from 'react-native';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {sendDocument} from "../actions/exampleActions";
+import {getUsers} from '../actions/db-actions';
 
 class HomeScreen extends React.Component {
     constructor(props) {
@@ -14,9 +14,11 @@ class HomeScreen extends React.Component {
             <View style={styles.container}>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                     <View style={styles.helpContainer}>
-                        <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-                            <Text style={styles.helpLinkText}>Mobile App IOS</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.helpLinkText}>Mobile App IOS</Text>
+                        <Text>{this.props.users}</Text>
+                        <Button
+                            onPress={() => this.props.getUsers()}
+                            title="Get Users"/>
                     </View>
                 </ScrollView>
             </View>
@@ -25,14 +27,14 @@ class HomeScreen extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const {truckDriver} = state;
-    return {truckDriver};
+    const {users} = state.dbclient;
+    return {users};
 };
 
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
-            sendDocument
+            getUsers
         },
         dispatch
     );

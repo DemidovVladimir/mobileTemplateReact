@@ -2,37 +2,10 @@ import React from 'react';
 import {Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import {Provider} from 'react-redux';
-import {applyMiddleware, combineReducers, compose, createStore} from 'redux';
-import logger from 'redux-logger';
-import {createEpicMiddleware} from 'redux-observable';
-import rootEpics from './root';
-import thunk from 'redux-thunk';
-import registerTruckDriverReducer from './reducers/exampleReducer';
 import AppNavigator from './navigation/AppNavigator';
 import NavigatorService from './services/NavigatorService';
-
-// Store configuration
-const epicMiddleware = createEpicMiddleware();
-// Configure Devtools for redux
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-const featureReducers = combineReducers({
-    users: registerTruckDriverReducer,
-});
-
-const store = createStore(
-    featureReducers,
-    composeEnhancers(
-        applyMiddleware(
-            logger,
-            thunk,
-            epicMiddleware
-        )
-    )
-);
-
-// Start rxjs redux effects
-epicMiddleware.run(rootEpics);
+import {initializeStore} from "./store";
+const store = initializeStore();
 
 export default class App extends React.Component {
     state = {
