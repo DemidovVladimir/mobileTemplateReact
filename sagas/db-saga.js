@@ -1,73 +1,64 @@
-import { put, take, call } from 'redux-saga/effects';
-import { Stitch, AnonymousCredential} from 'mongodb-stitch-react-native-sdk';
-import {RemoteMongoClient} from 'mongodb-stitch-react-native-services-mongodb-remote';
-import {actionTypes} from '../actions/db-actions';
+import {put, select, take} from 'redux-saga/effects';
+import {
+    actionTypes,
+    failToConnect,
+    getStitchClientSuccess,
+    getUsersFail,
+    getUsersSuccess,
+    userLogInFail,
+    userLogInSuccess,
+    userLogOutFail,
+    userLogOutSuccess
+} from '../actions/db-actions';
+import {AnonymousCredential, Stitch} from 'mongodb-stitch-react-native-sdk';
 
-export function* getDbClient() {
+export function* loadStitchClient() {
     try {
-        while(true) {
-            yield take('GET_USERS');
-            const stitchAppClient = yield call(Stitch.initializeDefaultAppClient, 'crossroad-gjotw');
-            console.log(stitchAppClient, ' - - - - - this is the app client....');
-            // console.log(stitchAppClient.auth, ' - - -  - - - - auth...');
-            const db = stitchAppClient.getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas').db('test');
-            console.log(db, ' - - - - - - db........');
-            yield call(stitchAppClient.auth.loginWithCredential, new AnonymousCredential());
-
-            const usersCollection = yield call(db.collection, 'users');
-            console.log(usersCollection, ' - - - - - - users collection....');
-
-            const users = yield call(usersCollection.find, {});
-            console.log(users, ' - - - - - - - - users.....');
-
-
-            // const client = yield call(stitchAppClient.auth.loginWithCredential, new AnonymousCredential());
-            // console.log(client,' - - - - - client...');
-            //
-            // const mongoClient = yield call(stitchAppClient.getServiceClient, RemoteMongoClient.factory, 'mongodb-atlas');
-            // const db = yield call(mongoClient.db, 'test');
-            // const usersCollection = yield call(db.collection, 'users');
-
-
-
-
-
-            // const client = yield call(stitchAppClient.auth.loginWithCredential, 'crossroad-gjotw');
-            // yield put({type: actionTypes.GET_DB_CLIENT_SUCCESS, data: client});
-            // const dbClient = client.getServiceClient(RemoteMongoClient.factory, "mongodb-atlas");
-            // const db = dbClient.db("greetings");
-            // yield put({type: actionTypes.GET_DB_SUCCESS, data: db});
-            // const users = yield call(fetchUsers, db);
-            // const users = yield call(usersCollection.find, {});
-            yield put({type: 'GET_USERS_SUCCESS', data: users})
+        while (true) {
+            yield take(actionTypes.GET_STITCH_CLIENT);
+            const payload = yield Stitch.initializeDefaultAppClient('crossroad-zyama');
+            yield put(getStitchClientSuccess(payload))
         }
     } catch (error) {
-        yield put({type: 'FAIL_CONNECTION', error});
+        yield put(failToConnect(error));
     }
 }
 
-function* getAtlasClient(client) {
-    for(let i = 0; i < 5; i++) {
-        try {
-            // const db = client.service("mongodb", "mongodb-atlas").db("test");
-            return client
-        } catch(err) {
+export function* userLogIn() {
+    try {
+        while (true) {
+            yield take(actionTypes.USER_LOG_IN);
+            const stitchClient = yield select(state => state.dbclient.stitchClient);
+            const user = yield stitchClient.auth.loginWithCredential(new AnonymousCredential());
+            yield put(userLogInSuccess(user.id));
         }
+    } catch (error) {
+        yield put(userLogInFail(error));
     }
-    // attempts failed after 5 attempts
-    throw new Error('Mongo connection failed');
 }
 
-function* fetchUsers(db) {
-    for(let i = 0; i < 5; i++) {
-        try {
-            // const users = this.db.collection("users");
-            // return users.find({})
-            return 'users'
-        } catch(err) {
+export function* getUsers() {
+    try {
+        while (true) {
+            yield take(actionTypes.GET_USERS);
+            const stitchCLient = yield select(state => state.dbclient.stitchClient);
+            const users = yield stitchCLient.callFunction("test", []);
+            yield put(getUsersSuccess(users));
         }
+    } catch (error) {
+        yield put(getUsersFail(error))
     }
-    // attempts failed after 5 attempts
-    throw new Error('Mongo connection failed');
 }
 
+export function* userLogOut() {
+    try {
+        while (true) {
+            yield take(actionTypes.USER_LOG_OUT);
+            const stitchCLient = yield select(state => state.dbclient.stitchClient);
+            yield stitchCLient.auth.logout();
+            yield put(userLogOutSuccess())
+        }
+    } catch (error) {
+        yield put(userLogOutFail(error))
+    }
+}

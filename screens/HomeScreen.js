@@ -1,12 +1,16 @@
 import React from 'react';
-import {Platform, ScrollView, StyleSheet, Text, View, Button} from 'react-native';
+import {Button, Platform, ScrollView, StyleSheet, Text, View, FlatList} from 'react-native';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {getUsers} from '../actions/db-actions';
+import {getStitchClient, getUsers, userLogIn, userLogOut} from '../actions/db-actions';
 
 class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        this.props.getStitchClient();
     }
 
     render() {
@@ -15,10 +19,22 @@ class HomeScreen extends React.Component {
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                     <View style={styles.helpContainer}>
                         <Text style={styles.helpLinkText}>Mobile App IOS</Text>
-                        <Text>{this.props.users}</Text>
+                        <Text>Mongo Stitch user ID:</Text>
+                        <Text>{this.props.currentUser}</Text>
+                        <Button
+                            onPress={() => this.props.userLogIn()}
+                            title="User Log In"/>
                         <Button
                             onPress={() => this.props.getUsers()}
-                            title="Get Users"/>
+                            title="Get All Users"/>
+                        <Text>Users from Mongo Atlas DB:</Text>
+                        <FlatList
+                            data={this.props.users}
+                            renderItem={({item}) => <Text>{item.key}</Text>}
+                        />
+                        <Button
+                            onPress={() => this.props.userLogOut()}
+                            title="User Log Out"/>
                     </View>
                 </ScrollView>
             </View>
@@ -27,14 +43,20 @@ class HomeScreen extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const {users} = state.dbclient;
-    return {users};
+    const {currentUser, users} = state.dbclient;
+    return {
+        currentUser,
+        users
+    };
 };
 
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
-            getUsers
+            getUsers,
+            getStitchClient,
+            userLogIn,
+            userLogOut
         },
         dispatch
     );
